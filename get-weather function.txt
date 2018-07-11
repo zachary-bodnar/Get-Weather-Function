@@ -1,0 +1,43 @@
+﻿function Get-Weather
+{ [cmdletbinding()]
+param(
+[parameter(mandatory=$true,Position=1)][string]$city,
+[parameter(mandatory=$true,Position=2)][string]$state,
+[parameter(mandatory=$true)][string]$NumberOfDays
+)
+$URI = "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='{0}, {1}')&format=json&env=store://datatables.org/alltableswithkeys" -f $city, $state
+$Data = Invoke-RestMethod -Uri $URI 
+$Data.query.results.channel.item.forecast | Select-Object -First $NumberOfDays | Format-Table
+$Data.query.results.channel.astronomy
+
+
+function Get-Weather
+{
+param(
+[parameter(mandatory=$true,Position=1)][string]$city,
+[parameter(mandatory=$true,Position=2)][string]$state,
+[parameter(mandatory=$true)][string]$NumberOfDays
+)
+$URI = "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='{0}, {1}')&format=json&env=store://datatables.org/alltableswithkeys" -f $city, $state
+$Data = Invoke-RestMethod -Uri $URI 
+$Data.query.results.channel.item.forecast | Select-Object -First $NumberOfDays | Format-Table
+$Data.query.results.channel.astronomy 
+
+$URI = "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='{0}, {1}')&format=json&env=store://datatables.org/alltableswithkeys" -f $city, $state
+$Data = Invoke-RestMethod -Uri $URI 
+$Data.query.results.channel.item.forecast | Select-Object -First $NumberOfDays | Format-Table | Out-File -filePath "H:\Documents\get-weather.forecast.txt"
+$Data.query.results.channel.astronomy | out-file -filePath "H:\Documents\get-weather.astronomy.txt" 
+
+Add-Type -AssemblyName System.speech
+$Speak = New-Object System.Speech.Synthesis.SpeechSynthesizer
+$PhraseLocation = "H:\Documents\get-weather.forecast.txt"
+$Phrase         = (Get-Content $PhraseLocation)
+$speak.Speak($Phrase)
+
+Add-Type -AssemblyName System.speech
+$Speak = New-Object System.Speech.Synthesis.SpeechSynthesizer
+$PhraseLocation1 = "H:\Documents\get-weather.astronomy.txt"
+$Phrase1         = (Get-Content $PhraseLocation1)
+$speak.Speak($Phrase1)
+
+ }
